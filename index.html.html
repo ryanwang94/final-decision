@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>终极二选一</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      background: linear-gradient(135deg, #a8edea, #fed6e3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    section {
+      display: none;
+      background: white;
+      padding: 40px 60px;
+      border-radius: 15px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      text-align: center;
+      max-width: 480px;
+      width: 100%;
+    }
+
+    section.active {
+      display: block;
+    }
+
+    #home h1 {
+      font-size: 2.4rem;
+      color: #333;
+      margin-bottom: 40px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+      max-width: 100%;
+    }
+
+    button {
+      background-color: #6c63ff;
+      color: white;
+      border: none;
+      padding: 15px 35px;
+      font-size: 1.2rem;
+      margin: 10px 10px 0 10px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
+    }
+
+    button:hover {
+      background-color: #594ef8;
+      box-shadow: 0 6px 18px rgba(89, 78, 248, 0.6);
+    }
+
+    label {
+      display: inline-block;
+      width: 60px;
+      text-align: right;
+      margin-right: 10px;
+    }
+
+    input {
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 220px;
+      font-size: 1rem;
+    }
+
+    #notice h2 {
+      font-size: 1.8rem;
+      color: #444;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    #notice p {
+      font-size: 1.1rem;
+      color: #666;
+      margin-bottom: 30px;
+      font-weight: 500;
+    }
+
+    #question h2 {
+      font-size: 2rem;
+      margin-bottom: 25px;
+      color: #333;
+      font-weight: 700;
+    }
+
+    #question img {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      object-fit: contain;
+    }
+
+    #question img.small-img {
+      max-height: 400px;
+      max-width: 500px;
+    }
+
+    #options {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+
+    .option-btn {
+      flex: 1;
+      margin: 0 10px;
+      padding: 15px 0;
+      font-size: 1.2rem;
+      border-radius: 50px;
+      background-color: #6c63ff;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
+      border: 3px solid transparent;
+    }
+
+    .option-btn:hover {
+      background-color: #594ef8;
+      box-shadow: 0 6px 18px rgba(89, 78, 248, 0.6);
+    }
+
+    .option-btn.selected {
+      border-color: #ffcc00;
+      background-color: #fff176;
+      color: #333;
+      box-shadow: 0 0 10px #ffcc00;
+    }
+
+    #confirmContainer {
+      margin-top: 15px;
+      display: none;
+      text-align: center;
+    }
+
+    #loading {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #6c63ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #error-message {
+      color: #ff4444;
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- 加载动画 -->
+  <div id="loading">
+    <div class="spinner"></div>
+    <p>正在提交答案...</p>
+  </div>
+
+  <!-- 主页 -->
+  <section id="home" class="active">
+    <h1>欢迎来到终极二选一</h1>
+    <button onclick="showSection('register')">注册</button>
+    <button onclick="showSection('login')">登入</button>
+  </section>
+
+  <!-- 注册页 -->
+  <section id="register">
+    <h2>注册</h2>
+    <form id="registerForm">
+      <label for="regEmail">邮箱：</label>
+      <input type="email" id="regEmail" required placeholder="请输入邮箱" /><br />
+      <label for="regPassword">密码：</label>
+      <input type="password" id="regPassword" required placeholder="请输入密码" /><br />
+      <button type="submit">注册</button>
+      <button type="button" onclick="showSection('home')">返回首页</button>
+    </form>
+  </section>
+
+  <!-- 登入页 -->
+  <section id="login">
+    <h2>登入</h2>
+    <form id="loginForm">
+      <label for="logEmail">邮箱：</label>
+      <input type="email" id="logEmail" required placeholder="请输入邮箱" /><br />
+      <label for="logPassword">密码：</label>
+      <input type="password" id="logPassword" required placeholder="请输入密码" /><br />
+      <button type="submit">登入</button>
+      <button type="button" onclick="showSection('home')">返回首页</button>
+    </form>
+  </section>
+
+  <!-- 登录成功后须知页 -->
+  <section id="notice">
+    <h2>接下来你需要回答10个终极二选一的问题</h2>
+    <p>如果你偷懒不回答完成就要请我吃饭</p>
+    <button id="acknowledgeBtn">已看完须知</button>
+  </section>
+
+  <!-- 答题页 -->
+  <section id="question">
+    <h2 id="questionTitle"></h2>
+    <img id="questionImage" src="" alt="题目图片" />
+    <div id="options">
+      <div class="option-btn" id="option1"></div>
+      <div class="option-btn" id="option2"></div>
+    </div>
+    <div id="confirmContainer">
+      <button id="confirmBtn">确定</button>
+    </div>
+    <div id="error-message"></div>
+  </section>
+
+  <script>
+    // 问题数据
+    const questionData = [
+      {
+        question: "狗狗还是猫咪？",
+        image: "https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?auto=format&fit=crop&w=600&q=80",
+        options: ["狗狗", "猫咪"]
+      },
+      {
+        question: "手机选项（如果都不是就随便选）",
+        image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80",
+        options: ["Samsung", "Apple"]
+      },
+      {
+        question: "薯条要不要沾番茄酱",
+        image: "https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=600&q=80",
+        options: ["要", "不要"]
+      },
+      {
+        question: "咖喱拌还是不拌",
+        image: "https://img.ltn.com.tw/Upload/food/page/2019/02/23/190223-8666-123-vuVvI.jpg",
+        options: ["拌", "不拌"]
+      },
+      {
+        question: "五条悟还是夏油杰",
+        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2dT2UMattAa5cy1j4-97YfbC5Ih86QIKtCw&s",
+        options: ["五条悟", "夏油杰"]
+      },
+      {
+        question: "另一半的标准外貌比较重要还是性格",
+        image: "https://image1.gamme.com.tw/news2/2020/72/78/pZ_Unp_Vl6SVqQ.jpg",
+        options: ["外貌", "性格"]
+      },
+      {
+        question: "你要跟喜欢你的人在一起还是你喜欢的人在一起",
+        image: "https://ih1.redbubble.net/image.4976922280.6082/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg",
+        options: ["跟喜欢你的人", "你喜欢的人"]
+      },
+      {
+        question: "可乐还是雪碧",
+        image: "https://s1.cdn00.com/201304270425418495_c_w_400.jpg",
+        options: ["雪碧", "可乐"]
+      },
+      {
+        question: "你愿意让你的对象跟颜值比你高的出轨还是颜值比你低的出轨",
+        image: "https://img.freepik.com/free-vector/simple-vibing-cat-square-meme_742173-4493.jpg?semt=ais_hybrid&w=740&q=80",
+        options: ["颜值比较高的", "颜值比较低的"]
+      },
+      {
+        question: "你愿意有180的身高但近视1000度还是160的身高视力正常",
+        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfi7B-qhi0ovOCRnlHWeuKgFoxuuS9KXJ8lA&s",
+        options: ["180身高近视1000度", "160身高视力正常"]
+      }
+    ];
+
+    // 替换为您的Google Apps Script部署URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwlp93n1HqmjbnDQV-5xTNFEmNts_Y8ATgyBhKMx7hWTTO-2JUrjkTTxqKsdr9riWI/exec";
+    // YouTube视频URL（添加自动播放和全屏参数）
+    const YOUTUBE_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&autoplay=1&fs=1";
+
+    let currentQuestion = 0;
+    let selected = null;
+    let userEmail = "";
+    let answers = [];
+
+    // 获取DOM元素
+    const option1 = document.getElementById('option1');
+    const option2 = document.getElementById('option2');
+    const questionTitle = document.getElementById('questionTitle');
+    const questionImage = document.getElementById('questionImage');
+    const confirmBtn = document.getElementById('confirmBtn');
+    const confirmContainer = document.getElementById('confirmContainer');
+    const loading = document.getElementById('loading');
+    const errorMessage = document.getElementById('error-message');
+
+    // 显示/隐藏页面
+    function showSection(id) {
+      document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      errorMessage.style.display = 'none';
+    }
+
+    // 显示加载动画
+    function showLoading(show) {
+      loading.style.display = show ? 'flex' : 'none';
+    }
+
+    // 显示错误信息
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.style.display = 'block';
+    }
+
+    // 注册功能
+    document.getElementById('registerForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+      
+      if (!email || !password) {
+        showError('邮箱和密码不能为空');
+        return;
+      }
+      
+      if (localStorage.getItem(email)) {
+        showError('此邮箱已注册');
+        return;
+      }
+      
+      localStorage.setItem(email, password);
+      userEmail = email;
+      alert('注册成功！');
+      e.target.reset();
+      showSection('home');
+    });
+
+    // 登入功能
+    document.getElementById('loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = document.getElementById('logEmail').value.trim();
+      const password = document.getElementById('logPassword').value;
+      
+      if (!email || !password) {
+        showError('邮箱和密码不能为空');
+        return;
+      }
+      
+      const savedPassword = localStorage.getItem(email);
+      if (savedPassword === password) {
+        userEmail = email;
+        alert('登入成功！');
+        e.target.reset();
+        showSection('notice');
+      } else {
+        showError('邮箱或密码错误');
+      }
+    });
+
+    // 须知页"已看完须知"按钮事件，开始答题
+    document.getElementById('acknowledgeBtn').addEventListener('click', () => {
+      currentQuestion = 0;
+      answers = [];
+      loadQuestion();
+      showSection('question');
+    });
+
+    // 加载当前题目
+    function loadQuestion() {
+      const q = questionData[currentQuestion];
+      questionTitle.textContent = q.question;
+      questionImage.src = q.image;
+
+      // 第一题图片特殊处理
+      if(currentQuestion === 0){
+        questionImage.classList.add('small-img');
+      } else {
+        questionImage.classList.remove('small-img');
+      }
+
+      option1.textContent = q.options[0];
+      option2.textContent = q.options[1];
+      selected = null;
+      confirmContainer.style.display = 'none';
+      option1.classList.remove('selected');
+      option2.classList.remove('selected');
+    }
+
+    // 选项点击事件
+    option1.addEventListener('click', () => {
+      selected = option1.textContent;
+      option1.classList.add('selected');
+      option2.classList.remove('selected');
+      confirmContainer.style.display = 'block';
+    });
+
+    option2.addEventListener('click', () => {
+      selected = option2.textContent;
+      option2.classList.add('selected');
+      option1.classList.remove('selected');
+      confirmContainer.style.display = 'block';
+    });
+
+    // 提交答案到Google Sheets并跳转
+    async function submitAnswers() {
+      showLoading(true);
+      
+      const data = {
+        email: userEmail || "anonymous_" + Math.random().toString(36).substring(2, 9),
+        timestamp: new Date().toISOString(),
+        answers: answers
+      };
+
+      try {
+        // 尝试提交数据（即使失败也继续跳转）
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          mode: 'no-cors'
+        });
+        
+        // 立即跳转到YouTube，尝试全屏播放
+        window.location.href = YOUTUBE_URL;
+        
+      } catch (error) {
+        console.error('提交错误:', error);
+        // 即使提交失败也尝试跳转
+        window.location.href = YOUTUBE_URL;
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // 确认按钮事件
+    confirmBtn.addEventListener('click', async () => {
+      if (!selected) {
+        showError('请先选择一个选项！');
+        return;
+      }
+      
+      // 记录当前问题的答案
+      answers.push({
+        question: questionData[currentQuestion].question,
+        answer: selected,
+        questionNumber: currentQuestion + 1
+      });
+      
+      // 如果是最后一题
+      if (currentQuestion >= questionData.length - 1) {
+        await submitAnswers(); // 提交并跳转
+      } else {
+        // 下一题
+        currentQuestion++;
+        loadQuestion();
+      }
+    });
+
+    // 初始化加载第一题
+    if (questionData.length > 0) {
+      loadQuestion();
+    }
+  </script>
+</body>
+</html>
